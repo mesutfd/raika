@@ -8,6 +8,8 @@ import datetime
 import jwt
 from fastapi import Depends, FastAPI, Form, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi import Request
+from fastapi.openapi.docs import get_swagger_ui_html
 from pydantic import BaseModel
 from starlette.responses import JSONResponse
 from typing_extensions import List, Dict, Optional, TypedDict, Union
@@ -38,7 +40,6 @@ app.include_router(mongo_profiles_router, prefix="/mongo-profiles")
 app.include_router(background_tasks_router, prefix="/background-tasks")
 app.include_router(celery_tasks_router, prefix="/celery-tasks")
 app.include_router(concurrency_management_router, prefix="/concurrency-management")
-
 
 
 # def custom_openapi():
@@ -77,7 +78,14 @@ class Item(TypedDict):
 items: List[Item] = []
 
 
-# I personally always create this function to make rest standard outputs
+@app.get("/", tags=["system"], summary="Show Docs")
+async def root(request: Request):
+    """Redirect to main docs root
+    """
+    return get_swagger_ui_html(
+        openapi_url='./openapi.json',
+        title="Mesutfd/Raika API",
+    )
 
 
 # get list of items (pagination is skipped...)
@@ -101,7 +109,6 @@ async def create_item(name: str, description: Optional[str] = Form("")):
     )
     items.append(new_item)
     return api_response(result=new_item)
-
 
 # PART 2
 

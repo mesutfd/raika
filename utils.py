@@ -2,6 +2,7 @@ from starlette.responses import JSONResponse
 from typing_extensions import List, Dict, Optional, TypedDict, Union
 
 
+# I personally always create this function to make rest standard outputs
 def api_response(
         result: Union[List[Dict], Dict, None],
         message: str = "Operation successful",
