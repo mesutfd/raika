@@ -8,5 +8,10 @@
         <option name="userId" value="-8222e1d:193f2a54c31:-7ff6" />
       </MTProjectMetadataState>
     </option>
+    <option name="titleBarState">
+      <MTProjectTitleBarConfigState>
+        <option name="overrideColor" value="false" />
+      </MTProjectTitleBarConfigState>
+    </option>
   </component>
 </project>
