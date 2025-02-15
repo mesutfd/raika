@@ -1,0 +1,63 @@
+version: '3.8'
+
+services:
+  app:
+    build: .
+    container_name: fastapi_app
+    depends_on:
+      postgres:
+        condition: service_healthy
+      mongodb:
+        condition: service_started
+      rabbitmq:
+        condition: service_started
+    environment:
+      - DEFAULT_DB_URL=postgresql+psycopg2://admin:P%40ssw0rd@postgres:5432/postgres
+      - DATABASE_URL=postgresql+psycopg2://admin:P%40ssw0rd@postgres:5432/raika
+      - MONGO_URI=mongodb://mongodb:27017/
+      - RABBITMQ_URL=pyamqp://guest:123456@rabbitmq:5672/
+    ports:
+      - "8000:80"
+    networks:
+      - app_network
+
+  postgres:
+    image: postgres:15
+    container_name: postgres_db
+    environment:
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: P@ssw0rd
+      POSTGRES_DB: raika
+    ports:
+      - "5432:5432"
+    networks:
+      - app_network
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U admin -d raika" ]
+      interval: 10s
+      retries: 5
+      timeout: 5s
+
+  mongodb:
+    image: mongo:6
+    container_name: mongo_db
+    ports:
+      - "27017:27017"
+    networks:
+      - app_network
+
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: rabbitmq_server
+    environment:
+      RABBITMQ_DEFAULT_USER: guest
+      RABBITMQ_DEFAULT_PASS: 123456
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    networks:
+      - app_network
+
+networks:
+  app_network:
+    driver: bridge
